@@ -1,0 +1,198 @@
+
+@startuml UrbanTransportSystem
+
+title UML Class Diagram - Public Transport Management System
+
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam shadowing false
+skinparam packageStyle rectangle
+
+' =========================
+' BUS STOP CLASS
+' =========================
+
+class BusStop {
+
+    - code : string
+    - name : string
+    - address : string
+    - latitude : double
+    - longitude : double
+
+    - validateBasicData(code : string, name : string, address : string) : void
+    - validateName(name : string) : void
+    - validateAddress(address : string) : void
+    - validateCode(code : string) : void
+    - validateLatitude(latitude : double) : void
+    - validateLongitude(longitude : double) : void
+
+    + BusStop(code : string, name : string, address : string)
+    + BusStop(code : string, name : string, address : string, latitude : double, longitude : double)
+
+    + getCode() : string
+    + getName() : string
+    + getAddress() : string
+    + getLatitude() : double
+    + getLongitude() : double
+
+    + setCode(code : string) : void
+    + setName(name : string) : void
+    + setAddress(address : string) : void
+    + setLatitude(latitude : double) : void
+    + setLongitude(longitude : double) : void
+}
+
+' =========================
+' TRANSIT LINE CLASS
+' =========================
+
+class TransitLine {
+
+    - lineNumber : int
+    - transportType : TransportType
+    - stopCodes : vector<string>
+    - movementInterval : int
+
+    - validateLineNumber(lineNumber : int) : void
+    - validateTransportType(transportType : TransportType) : void
+    - validateMovementInterval(movementInterval : int) : void
+    - validateStopCodes(stopCodes : vector<string>) : void
+    - validateCode(code : string) : void
+
+    + TransitLine(lineNumber : int, transportType : TransportType, movementInterval : int)
+    + TransitLine(lineNumber : int, transportType : TransportType, stopCodes : vector<string>, movementInterval : int)
+
+    + getLineNumber() : int
+    + getTransportType() : TransportType
+    + getStopCodes() : const vector<string>&
+    + getMovementInterval() : int
+
+    + setLineNumber(lineNumber : int) : void
+    + setTransportType(transportType : TransportType) : void
+    + setStopCodes(stopCodes : vector<string>) : void
+    + setMovementInterval(movementInterval : int) : void
+    + addStop(stopCode : string) : void
+    + removeStop(stopCode : string) : void
+}
+
+' =========================
+' SCHEDULE CLASS
+' =========================
+
+class Schedule {
+
+    - lineNumber : int
+    - startTime : string
+    - endTime : string
+
+    - validateLineNumber(lineNumber : int) : void
+    - validateTime(time : string) : void
+
+    + Schedule(lineNumber : int)
+    + Schedule(lineNumber : int, startTime : string, endTime : string)
+
+    + getLineNumber() : int
+    + getStartTime() : string
+    + getEndTime() : string
+
+    + setLineNumber(lineNumber : int) : void
+    + setStartTime(startTime : string) : void
+    + setEndTime(endTime : string) : void
+
+    + generateDepartureTimes(movementInterval : int) : vector<string>
+}
+
+' =========================
+' TRANSPORT MANAGER CLASS
+' =========================
+
+class TransportManager {
+
+    - busStops : unordered_map<string, BusStop>
+    - transitLines : unordered_map<int, TransitLine>
+    - schedules : unordered_map<int, Schedule>
+
+    - stopsFile : string
+    - linesFile : string
+    - schedulesFile : string
+
+    + TransportManager()
+    + TransportManager(stopsFile : string, linesFile : string, schedulesFile : string)
+
+    + addBusStop(stop : BusStop) : void
+    + removeBusStop(stopCode : string) : void
+    + getBusStop(stopCode : string) : BusStop
+
+    + addTransitLine(line : TransitLine) : void
+    + removeTransitLine(lineNumber : int) : void
+    + getTransitLine(lineNumber : int) : TransitLine
+
+    + assignStopToLine(lineNumber : int, stopCode : string) : void
+    + removeStopFromLine(lineNumber : int, stopCode : string) : void
+    + findLinesByStop(stopCode : string) : vector<int>
+
+    + displaySchedule(lineNumber : int) : void
+    + addSchedule(schedule : Schedule) : void
+
+    + displayAllBusStops() : void
+    + displayAllTransitLines() : void
+    + displayRoute(lineNumber : int) : void
+
+    + loadBusStops() : void
+    + loadTransitLines() : void
+    + saveBusStops() : void
+    + saveTransitLines() : void
+    + loadSchedules() : void
+    + saveSchedules() : void
+}
+
+
+' =========================
+' ENUMERATION
+' =========================
+
+enum TransportType {
+    BUS
+    TRAM
+    TROLLEYBUS
+}
+
+' =========================
+' COMPOSITION RELATIONSHIPS
+' =========================
+
+TransportManager "1" *-- "0..*" BusStop : busStops
+TransportManager "1" *-- "0..*" TransitLine : transitLines
+TransportManager "1" *-- "0..*" Schedule : schedules
+
+' =========================
+' ASSOCIATION RELATIONSHIPS
+' =========================
+
+TransitLine "0..*" -- "0..*" BusStop : stopCodes
+
+TransitLine "1" -- "0..1" Schedule : lineNumber
+
+' =========================
+' DEPENDENCY / TYPE USAGE
+' =========================
+
+note right of TransitLine
+  transportType : TransportType
+  stopCodes : vector<string>
+end note
+
+note bottom of Schedule
+  lineNumber идентифицира
+  съответната транспортна линия.
+end note
+
+note bottom of BusStop
+  TransitLine използва кодовете
+  на спирките, а TransportManager
+  разрешава тези кодове до обекти BusStop.
+end note
+
+@enduml
+

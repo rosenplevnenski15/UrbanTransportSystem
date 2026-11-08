@@ -1,0 +1,21 @@
+# macOS
+.DS_Store
+**/.DS_Store
+__MACOSX/
+
+# Compiled files
+*.o
+*.obj
+*.exe
+*.out
+UrbanTransportSystem
+
+# Build directories
+build/
+cmake-build-*/
+
+# IDE settings
+.idea/
+
+# VS Code settings
+.vscode/

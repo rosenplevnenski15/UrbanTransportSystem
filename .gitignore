@@ -16,6 +16,7 @@ cmake-build-*/
 
 # IDE settings
 .idea/
-
-# VS Code settings
 .vscode/
+
+# Debug files
+*.dSYM/
